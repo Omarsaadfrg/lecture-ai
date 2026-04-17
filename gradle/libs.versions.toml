@@ -1,7 +1,7 @@
 [versions]
 agp = "8.5.2"
 kotlin = "2.0.21"
-coreKtx = "1.17.0"
+coreKtx = "1.12.0"
 lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.9.0"
 composeBom = "2024.09.00"
@@ -36,6 +36,10 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
+# 🔥 الحل هنا (icons)
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
