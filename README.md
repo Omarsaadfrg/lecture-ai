@@ -1,13 +1,13 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/AI-Powered-00FF88?style=for-the-badge&logo=openai&logoColor=black" />
-<img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-00FF88?style=for-the-badge&logo=flutter&logoColor=black" />
-<img src="https://img.shields.io/badge/Status-Active-00FF88?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Android-Jetpack%20Compose-00FF88?style=for-the-badge&logo=android&logoColor=black" />
+<img src="https://img.shields.io/badge/Architecture-MVVM%20%7C%20Clean-00FF88?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Status-In%20Progress-00FF88?style=for-the-badge" />
 
 # 🎓 AILecture
 ### *Turn Lectures into Notes — Instantly*
 
-> Upload or record any lecture, and AI will **transcribe**, **summarize**, and **generate questions** — all in seconds.
+> Upload or record any lecture, and transform it into structured notes using AI.
 
 </div>
 
@@ -15,166 +15,120 @@
 
 ## 📱 Screenshots
 
+> (Add your screenshots here)
+
 | Login | Home | Processing | Results |
-|-------|------|------------|---------|
-| Welcome screen with clean dark UI | Upload or Record your lecture | Real-time progress tracking | Full transcript with timestamps |
+|------|------|-----------|---------|
+| Clean authentication UI | Upload or record lecture | Animated processing steps | Transcript with timestamps |
 
 ---
 
 ## ✨ Features
 
-- 🎙️ **Record Lectures** — Record directly from your phone in real-time
-- 📂 **Upload Audio** — Supports MP3, WAV, M4A · Up to 2 hours
-- 📝 **Full Transcript** — Timestamped, word-by-word transcription
-- 📋 **AI Summary** — Concise, structured summaries of key points
-- ❓ **Auto Questions** — Smart Q&A generated from lecture content
-- 💾 **Export Options** — Save as TXT, PDF, or copy to clipboard
-- 🕓 **History** — Access all your past lectures anytime
+- 🎙️ Record lectures directly from the app  
+- 📂 Upload audio files (MP3, WAV, M4A)  
+- 📊 Processing screen with real-time steps (Uploading → Transcribing → Summarizing → Generating)  
+- 📝 Full transcript UI with timestamps  
+- 💾 Export options (TXT, PDF, Copy)  
+- 🎯 Clean modern UI (Dark theme + green accent)  
 
 ---
 
-## 🚀 How It Works
+## 🚀 App Flow
 
-```
-1. 🎤  Upload or Record your lecture audio
-        ↓
-2. ⬆️  File uploads to the cloud
-        ↓
-3. 🔄  AI Transcribes the audio (with timestamps)
-        ↓
-4. 🧠  AI Summarizes the key points
-        ↓
-5. ❓  AI Generates study questions
-        ↓
-6. ✅  You get: Transcript + Summary + Questions
-```
+
+Login
+↓
+Home Screen
+↓
+Upload / Record Audio
+↓
+Processing Screen
+↓
+Result Screen (Transcript + Actions)
+
 
 ---
 
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
-|-------|------------|
-| 📱 Mobile App | Flutter / React Native |
-| 🎙️ Transcription | OpenAI Whisper API |
-| 🧠 Summarization | GPT-4 / Claude API |
-| 🔐 Auth | Firebase Authentication |
-| ☁️ Storage | Firebase Storage / AWS S3 |
-| ⚙️ Backend | Node.js / FastAPI |
+|------|------------|
+| 📱 Mobile App | Android (Jetpack Compose) |
+| 🧠 Architecture | MVVM + Clean Architecture |
+| 🔄 State Management | ViewModel + UI State |
+| 🧩 Navigation | Navigation Compose |
+| ⚙️ Language | Kotlin |
 
 ---
 
-## 🎯 Use Cases
+## 📊 Processing Logic (Current)
 
-- 🎓 **Students** — Never miss a detail from long lectures
-- 👩‍🏫 **Teachers** — Convert recorded classes into structured notes
-- 💼 **Professionals** — Turn meetings and seminars into actionable summaries
-- 🧑‍💻 **Self-learners** — Study from YouTube videos and podcasts
+
+User selects audio
+↓
+Navigate to Processing Screen
+↓
+Simulated steps (UI Flow)
+↓
+Navigate to Result Screen
+
+
+> ⚠️ AI processing is currently mocked (UI only)
 
 ---
 
-## 📊 Processing Pipeline
+## 🔮 Planned Features
 
-```
-Audio File
-    │
-    ▼
-┌─────────────┐
-│  Uploading  │  ← Progress bar + ETA
-└──────┬──────┘
-       │
-       ▼
-┌─────────────┐
-│ Transcribing│  ← Whisper AI
-└──────┬──────┘
-       │
-       ▼
-┌─────────────┐
-│ Summarizing │  ← GPT / Claude
-└──────┬──────┘
-       │
-       ▼
-┌─────────────┐
-│ Generating  │  ← Smart Q&A
-└──────┬──────┘
-       │
-       ▼
-  ✅ Results Ready
-```
+- 🤖 Real AI transcription (OpenAI Whisper)
+- 🧠 Smart summarization (GPT)
+- ❓ Auto-generated questions
+- ☁️ Backend integration (Node.js / Firebase)
+- 🔐 Authentication system
+- 🕓 History & saved lectures
+- 🌍 Multi-language support
 
 ---
 
 ## 📦 Getting Started
 
 ```bash
-# Clone the repo
 git clone https://github.com/yourusername/AILecture.git
-
-# Navigate to project
 cd AILecture
 
-# Install dependencies
-flutter pub get
-# or
-npm install
+Open in Android Studio and run the project.
 
-# Add your API keys in .env
-OPENAI_API_KEY=your_key_here
-FIREBASE_CONFIG=your_config_here
+🧱 Project Structure
+presentation/
+ ├── auth/
+ ├── home/
+ ├── processing/
+ ├── result/
+ └── navigation/
 
-# Run the app
-flutter run
-```
+domain/
+data/
+core/
+🎯 Goal of the Project
 
----
+This project focuses on:
 
-## 🔑 Environment Variables
+Building a production-level Android UI
+Applying Clean Architecture
+Designing a complete AI-based product flow
+Preparing for real backend & AI integration
+🤝 Contributing
 
-```env
-OPENAI_API_KEY=          # For Whisper + GPT
-FIREBASE_API_KEY=        # Firebase Auth & Storage
-BACKEND_URL=             # Your backend API URL
-```
+Feel free to fork the project and improve it.
 
----
+📄 License
 
-## 🗺️ Roadmap
-
-- [x] Audio upload & recording
-- [x] Real-time transcription
-- [x] AI summarization
-- [x] Question generation
-- [x] Export to TXT & PDF
-- [ ] 🌍 Multi-language support (Arabic, French, Spanish...)
-- [ ] 📺 YouTube link input
-- [ ] 🔍 Search inside transcripts
-- [ ] 👥 Share notes with classmates
-- [ ] 🎯 Flashcard generation
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
+MIT License
 
 <div align="center">
 
-Made with ❤️ by the AILecture Team
+Made with ❤️
 
-⭐ **Star this repo if you find it useful!** ⭐
+⭐ Star the repo if you like it ⭐
 
-</div>
+</div> ```
