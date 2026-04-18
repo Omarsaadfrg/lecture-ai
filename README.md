@@ -4,8 +4,7 @@
 <img src="https://img.shields.io/badge/Architecture-MVVM%20%7C%20Clean-00FF88?style=for-the-badge" />
 <img src="https://img.shields.io/badge/Status-In%20Progress-00FF88?style=for-the-badge" />
 
-# 🎓 AILecture
-### *Turn Lectures into Notes — Instantly*
+# 🎧 AILecture — AI-Powered Lecture Assistant### *Turn Lectures into Notes — Instantly*
 
 > Upload or record any lecture, and transform it into structured notes using AI.
 
@@ -15,45 +14,45 @@
 
 ## 📱 Screenshots
 
-> (Add your screenshots here)
+> *(Add your screenshots here)*
 
 | Login | Home | Processing | Results |
-|------|------|-----------|---------|
+|-------|------|------------|---------|
 | Clean authentication UI | Upload or record lecture | Animated processing steps | Transcript with timestamps |
 
 ---
 
 ## ✨ Features
 
-- 🎙️ Record lectures directly from the app  
-- 📂 Upload audio files (MP3, WAV, M4A)  
-- 📊 Processing screen with real-time steps (Uploading → Transcribing → Summarizing → Generating)  
-- 📝 Full transcript UI with timestamps  
-- 💾 Export options (TXT, PDF, Copy)  
-- 🎯 Clean modern UI (Dark theme + green accent)  
+- 🎙️ Record lectures directly from the app
+- 📂 Upload audio files (MP3, WAV, M4A)
+- 📊 Processing screen with real-time steps (Uploading → Transcribing → Summarizing → Generating)
+- 📝 Full transcript UI with timestamps
+- 💾 Export options (TXT, PDF, Copy)
+- 🎯 Clean modern UI (Dark theme + green accent)
 
 ---
 
 ## 🚀 App Flow
 
-
+```
 Login
-↓
+  ↓
 Home Screen
-↓
+  ↓
 Upload / Record Audio
-↓
+  ↓
 Processing Screen
-↓
+  ↓
 Result Screen (Transcript + Actions)
-
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
-|------|------------|
+|-------|------------|
 | 📱 Mobile App | Android (Jetpack Compose) |
 | 🧠 Architecture | MVVM + Clean Architecture |
 | 🔄 State Management | ViewModel + UI State |
@@ -64,15 +63,15 @@ Result Screen (Transcript + Actions)
 
 ## 📊 Processing Logic (Current)
 
-
+```
 User selects audio
-↓
+  ↓
 Navigate to Processing Screen
-↓
+  ↓
 Simulated steps (UI Flow)
-↓
+  ↓
 Navigate to Result Screen
-
+```
 
 > ⚠️ AI processing is currently mocked (UI only)
 
@@ -95,10 +94,15 @@ Navigate to Result Screen
 ```bash
 git clone https://github.com/yourusername/AILecture.git
 cd AILecture
+```
 
-Open in Android Studio and run the project.
+Open in **Android Studio** and run the project.
 
-🧱 Project Structure
+---
+
+## 🧱 Project Structure
+
+```
 presentation/
  ├── auth/
  ├── home/
@@ -109,26 +113,37 @@ presentation/
 domain/
 data/
 core/
-🎯 Goal of the Project
+```
+
+---
+
+## 🎯 Goal of the Project
 
 This project focuses on:
 
-Building a production-level Android UI
-Applying Clean Architecture
-Designing a complete AI-based product flow
-Preparing for real backend & AI integration
-🤝 Contributing
+- ✅ Building a production-level Android UI
+- ✅ Applying Clean Architecture
+- ✅ Designing a complete AI-based product flow
+- ✅ Preparing for real backend & AI integration
+
+---
+
+## 🤝 Contributing
 
 Feel free to fork the project and improve it.
 
-📄 License
+---
+
+## 📄 License
 
 MIT License
+
+---
 
 <div align="center">
 
 Made with ❤️
 
-⭐ Star the repo if you like it ⭐
+⭐ **Star the repo if you like it!** ⭐
 
-</div> ```
+</div>
