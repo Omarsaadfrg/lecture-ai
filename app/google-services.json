@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "82063366187",
+    "project_id": "lectureai-ba2b3",
+    "storage_bucket": "lectureai-ba2b3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82063366187:android:a87987c1a398744a04726e",
+        "android_client_info": {
+          "package_name": "com.omar.lectureai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnWzat92TPjlDK1TiBrXEbqxbU2Q3vppg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
