@@ -4,10 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class ProcessingViewModel : ViewModel() {
@@ -15,66 +12,81 @@ class ProcessingViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ProcessingUiState())
     val uiState: StateFlow<ProcessingUiState> = _uiState.asStateFlow()
 
-    // ─────────────────────────────────────────
-    //  Entry point — call this from the Screen
-    //  passing the URI the user picked/recorded
-    // ─────────────────────────────────────────
+    private var isProcessingStarted = false
+
     fun startProcessing(audioUri: Uri) {
+
+        if (isProcessingStarted) return
+        isProcessingStarted = true
+
         viewModelScope.launch {
             try {
-                // ── Step 1: Uploading ──────────────────
-                simulateStep(
-                    step     = ProcessStep.UPLOADING,
-                    durationMs = 3000L
-                )
 
-                // ── Step 2: Transcribing ───────────────
+                // 🔥 STEP 1: Uploading (REAL later)
+                _uiState.update {
+                    it.copy(
+                        currentStep = ProcessStep.UPLOADING,
+                        progress = 0.1f
+                    )
+                }
+
+                // 🔥 مؤقتًا لحد ما نربط Node API
+                delay(2000)
+
+                _uiState.update {
+                    it.copy(progress = 1f)
+                }
+
+                // باقي الخطوات (لسه fake)
                 simulateStep(
-                    step     = ProcessStep.TRANSCRIBING,
+                    step = ProcessStep.TRANSCRIBING,
                     durationMs = 4000L
                 )
 
-                // ── Step 3: Summarizing ────────────────
                 simulateStep(
-                    step     = ProcessStep.SUMMARIZING,
+                    step = ProcessStep.SUMMARIZING,
                     durationMs = 3000L
                 )
 
-                // ── Step 4: Generating Questions ───────
                 simulateStep(
-                    step     = ProcessStep.GENERATING,
+                    step = ProcessStep.GENERATING,
                     durationMs = 2000L
                 )
 
-                // ── Done → trigger navigation ──────────
-                _uiState.update { it.copy(isFinished = true, progress = 1f) }
+                _uiState.update {
+                    it.copy(
+                        isFinished = true,
+                        progress = 1f
+                    )
+                }
 
             } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessage = e.message ?: "Something went wrong") }
+                _uiState.update {
+                    it.copy(
+                        errorMessage = e.message ?: "Upload failed"
+                    )
+                }
             }
         }
     }
 
-    // ─────────────────────────────────────────
-    //  Simulates smooth progress for one step
-    //  Replace the body with your real API call
-    // ─────────────────────────────────────────
     private suspend fun simulateStep(step: ProcessStep, durationMs: Long) {
-        val tickMs  = 50L
-        val ticks   = durationMs / tickMs
+        val tickMs = 50L
+        val ticks = durationMs / tickMs
         val etaStart = (durationMs / 1000).toInt()
 
         for (tick in 0..ticks) {
-            val progress  = tick.toFloat() / ticks.toFloat()
-            val etaLeft   = (etaStart * (1f - progress)).toInt()
+            val progress = tick.toFloat() / ticks.toFloat()
+            val etaLeft = (etaStart * (1f - progress)).toInt()
 
             _uiState.update {
                 it.copy(
                     currentStep = step,
-                    progress    = progress,
-                    etaSeconds  = etaLeft
+                    progress = progress,
+                    etaSeconds = etaLeft
                 )
             }
+
             delay(tickMs)
         }
     }
