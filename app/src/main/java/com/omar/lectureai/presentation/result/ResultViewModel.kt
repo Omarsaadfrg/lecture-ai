@@ -1,17 +1,24 @@
 package com.omar.lectureai.presentation.result
 
 import androidx.lifecycle.ViewModel
+import com.omar.lectureai.data.model.dto.JobResultDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class ResultViewModel(
-) : ViewModel() {
+class ResultViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow<LectureUiState>(LectureUiState.Idle)
-    val uiState: StateFlow<LectureUiState> = _uiState.asStateFlow()
+    private val _result =
+        MutableStateFlow<JobResultDto?>(null)
 
-    fun processLecture(audioFilePath: String) {
-        TODO("Not yet implemented")
+    val result: StateFlow<JobResultDto?> =
+        _result.asStateFlow()
+
+    fun setResult(result: JobResultDto) {
+        _result.value = result
+    }
+
+    fun clearResult() {
+        _result.value = null
     }
 }
