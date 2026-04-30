@@ -10,7 +10,9 @@ import com.omar.lectureai.presentation.auth.LoginScreen
 import com.omar.lectureai.presentation.home.HomeScreen
 import com.omar.lectureai.presentation.processing.ProcessingScreen
 import com.omar.lectureai.presentation.result.ResultScreen
-
+import com.omar.lectureai.presentation.result.ResultViewModel
+import org.koin.androidx.compose.koinViewModel
+import com.omar.lectureai.presentation.result.TranscriptData
 private object Routes {
     const val LOGIN      = "login"
     const val HOME       = "home"
@@ -30,14 +32,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     ) {
 
         // ── Login ─────────────────────────────────────
-        composable(Routes.LOGIN) {
+        composable("login") {
             LoginScreen(
                 onLoginSuccess = {
-                    navController.navigate(Routes.HOME) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
                     }
-                },
-                onCreateAccount = { /* TODO: navigate to Register */ }
+                }
             )
         }
 
@@ -53,7 +54,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     navController.navigate(Routes.PROCESSING)
                 },
                 onHistoryClick = { /* TODO */ },
-                onNavigateToResult = { /* ❌ removed direct navigation */ }
+                onNavigateToResult = { /* removed */ }
             )
         }
 
@@ -71,7 +72,6 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     }
                 )
             } else {
-                // 🔥 FIX: prevent blank screen
                 LaunchedEffect(Unit) {
                     navController.popBackStack()
                 }
@@ -79,12 +79,40 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
 
         // ── Result ────────────────────────────────────
+        // ── Result ────────────────────────────────────
         composable(Routes.RESULT) {
+
+            val viewModel: ResultViewModel = koinViewModel()
+
+            val result by viewModel.result.collectAsState()
+
+            if (result == null) {
+
+                LaunchedEffect(Unit) {
+                    navController.popBackStack()
+                }
+
+                return@composable
+            }
+
             ResultScreen(
+
+                transcriptData = TranscriptData(
+                    fullText = result?.fullText ?: "",
+                    blocks = result?.blocks ?: emptyList()
+                ),
+
                 onBack = {
+
                     pendingUri = null
+
+                    viewModel.clearResult()
+
                     navController.navigate(Routes.HOME) {
-                        popUpTo(Routes.HOME) { inclusive = true }
+
+                        popUpTo(Routes.HOME) {
+                            inclusive = true
+                        }
                     }
                 }
             )
