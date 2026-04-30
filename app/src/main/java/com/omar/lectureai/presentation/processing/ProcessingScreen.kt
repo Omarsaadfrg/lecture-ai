@@ -22,8 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import kotlin.math.*
+import androidx.compose.ui.platform.LocalContext
 
 // ─────────────────────────────────────────────
 //  COLORS
@@ -49,13 +50,14 @@ private object PC {
 fun ProcessingScreen(
     audioUri: Uri,                        // passed from HomeScreen
     onFinished: () -> Unit,               // navigate to ResultScreen
-    viewModel: ProcessingViewModel = viewModel()
-) {
+    viewModel: ProcessingViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsState()
 
     // Start processing once when the screen appears
+    val context = LocalContext.current
+
     LaunchedEffect(audioUri) {
-        viewModel.startProcessing(audioUri)
+        viewModel.startProcessing(audioUri, context)
     }
 
     // Navigate away when done

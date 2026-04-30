@@ -1,34 +1,73 @@
 package com.omar.lectureai.presentation.result
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.Article
+import androidx.compose.material.icons.rounded.BookmarkAdd
+import androidx.compose.material.icons.rounded.CopyAll
+import androidx.compose.material.icons.rounded.FileOpen
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.PictureAsPdf
+import androidx.compose.material.icons.rounded.Quiz
+import androidx.compose.material.icons.rounded.Summarize
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 // ──────────────────────────────────────────────
 //  COLOR PALETTE
 // ──────────────────────────────────────────────
@@ -49,12 +88,10 @@ private object LectureColors {
 // ──────────────────────────────────────────────
 //  DATA MODELS
 // ──────────────────────────────────────────────
-data class TranscriptBlock(
-    val id: Int,
-    val timestamp: String,
-    val text: String
+data class TranscriptData(
+    val fullText: String,
+    val blocks: List<TranscriptBlock>
 )
-
 enum class LectureTab(val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     TRANSCRIPT("Transcript", Icons.Rounded.Article),
     SUMMARY("Summary", Icons.Rounded.Summarize),
@@ -66,21 +103,22 @@ enum class LectureTab(val label: String, val icon: androidx.compose.ui.graphics.
 // ──────────────────────────────────────────────
 @Composable
 fun ResultScreen(
-    transcriptBlocks: List<TranscriptBlock> = sampleTranscript(),
-    onCopy: () -> Unit = {},
+    transcriptData: TranscriptData,
+    onCopyTranscript: (String) -> Unit = {},
     onSave: () -> Unit = {},
     onExportPdf: () -> Unit = {},
     onExportTxt: () -> Unit = {},
     onBack: () -> Unit = {}
 ) {
-    var selectedTab by remember { mutableStateOf(LectureTab.TRANSCRIPT) }
 
+
+    var selectedTab by remember { mutableStateOf(LectureTab.TRANSCRIPT) }
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(LectureColors.Background)
     ) {
-        // Ambient glow blob in the top area
         AmbientGlow(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -89,23 +127,41 @@ fun ResultScreen(
 
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // ── Top Bar ──
             TopBar(onHomeClick = onBack)
-            // ── Tab Row ──
+
             TabRow(
                 selectedTab = selectedTab,
                 onTabSelected = { selectedTab = it }
             )
 
-            // ── Action Bar ──
             ActionBar(
-                onCopy = onCopy,
-                onSave = onSave,
-                onExportPdf = onExportPdf,
-                onExportTxt = onExportTxt
-            )
 
-            // ── Content ──
+                onCopy = {
+
+                    val clipboard =
+                        context.getSystemService(Context.CLIPBOARD_SERVICE)
+                                as ClipboardManager
+
+                    val clip = ClipData.newPlainText(
+                        "Transcript",
+                        transcriptData.fullText
+                    )
+
+                    clipboard.setPrimaryClip(clip)
+
+                    Toast.makeText(
+                        context,
+                        "Transcript copied",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+
+                onSave = {},
+
+                onExportPdf = {},
+
+                onExportTxt = {}
+            )
             AnimatedContent(
                 targetState = selectedTab,
                 transitionSpec = {
@@ -114,7 +170,7 @@ fun ResultScreen(
                 label = "tab_content"
             ) { tab ->
                 when (tab) {
-                    LectureTab.TRANSCRIPT -> TranscriptContent(blocks = transcriptBlocks)
+                    LectureTab.TRANSCRIPT -> TranscriptContent(blocks = transcriptData.blocks)
                     LectureTab.SUMMARY    -> PlaceholderContent("Summary coming soon…")
                     LectureTab.QUESTIONS  -> PlaceholderContent("Questions coming soon…")
                 }
@@ -399,7 +455,7 @@ private fun TranscriptContent(blocks: List<TranscriptBlock>) {
 
         // Blocks list
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
             items(blocks, key = { it.id }) { block ->
@@ -442,23 +498,25 @@ private fun TranscriptBlockCard(block: TranscriptBlock) {
             Column(modifier = Modifier.padding(start = 18.dp, end = 16.dp, top = 14.dp, bottom = 14.dp)) {
                 // Timestamp
                 Text(
-                    text = block.timestamp,
+                    text = "\u200E${formatTimestamp(block.start, block.end)}\u200E",
                     style = TextStyle(
-                        fontSize = 11.sp,
-                        color = LectureColors.AccentDim,
-                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp,
+                        color = LectureColors.Accent,
+                        fontWeight = FontWeight.Bold,
                         letterSpacing = 0.5.sp
                     ),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 // Transcript text
                 Text(
-                    text = block.text,
+                    text = block.text.trim(),
                     style = TextStyle(
-                        fontSize = 15.sp,
+                        fontSize = 16.sp,
                         color = LectureColors.TextPrimary,
-                        lineHeight = 24.sp,
-                        fontWeight = FontWeight.Normal
+                        lineHeight = 28.sp,
+                        fontWeight = FontWeight.Normal,
+                        textDirection = TextDirection.Rtl,
+                        textAlign = TextAlign.Right
                     )
                 )
             }
@@ -512,30 +570,164 @@ private fun AmbientGlow(modifier: Modifier = Modifier) {
 //  SAMPLE DATA
 // ──────────────────────────────────────────────
 fun sampleTranscript(): List<TranscriptBlock> = listOf(
+
     TranscriptBlock(
         id = 1,
-        timestamp = "00:00:00",
+        start = 0.0,
+        end = 15.0,
         text = "Welcome to today's lecture on Machine Learning fundamentals. We'll be covering supervised and unsupervised learning, neural networks, and practical applications in modern AI systems."
     ),
+
     TranscriptBlock(
         id = 2,
-        timestamp = "00:01:15",
+        start = 15.0,
+        end = 42.0,
         text = "Let's start with supervised learning. This is a type of machine learning where we train our model using labeled data. The algorithm learns from the training dataset and makes predictions on new, unseen data. Common examples include image classification, spam detection, and sentiment analysis."
     ),
+
     TranscriptBlock(
         id = 3,
-        timestamp = "00:03:42",
+        start = 42.0,
+        end = 70.0,
         text = "Unsupervised learning, on the other hand, works with unlabeled data. The algorithm tries to find patterns and structures in the data without explicit guidance. Clustering algorithms like K-means and dimensionality reduction techniques like PCA are common examples."
     ),
+
     TranscriptBlock(
         id = 4,
-        timestamp = "00:06:10",
+        start = 70.0,
+        end = 95.0,
         text = "Neural networks are inspired by the structure of the human brain. They consist of layers of interconnected nodes, or neurons, that process information and learn complex patterns from data."
     ),
+
     TranscriptBlock(
         id = 5,
-        timestamp = "00:09:30",
+        start = 95.0,
+        end = 130.0,
         text = "Deep learning extends neural networks with many hidden layers, enabling models to learn hierarchical representations. This has led to breakthroughs in computer vision, natural language processing, and speech recognition."
     )
 )
+fun parseSrt(srt: String): TranscriptData {
 
+    val cleaned =
+        srt
+            .replace("\r\n", "\n")
+            .trim()
+
+    val blocks = mutableListOf<TranscriptBlock>()
+
+    val entries =
+        cleaned.split(Regex("\n\\s*\n"))
+
+    for (entry in entries) {
+
+        val lines =
+            entry.lines()
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+
+        if (lines.size < 3) continue
+
+        val id =
+            lines[0].toIntOrNull()
+                ?: continue
+
+        val rawTimestamp = lines[1]
+
+        val timestamp =
+            rawTimestamp
+                .split("-->")
+                .map {
+                    it.trim()
+                        .replace(",", ".")
+                        .substring(3, 8)
+                }
+                .let {
+
+                    if (it.size == 2) {
+                        "${it[0]} → ${it[1]}"
+                    } else {
+                        rawTimestamp
+                    }
+                }
+
+        val text =
+            lines
+                .drop(2)
+                .joinToString(" ")
+                .replace("�", "")
+                .replace(Regex("\\s+"), " ")
+                .trim()
+
+        if (text.isBlank()) continue
+
+        val parts =
+            rawTimestamp
+                .split("-->")
+                .map { it.trim() }
+
+        fun parseTime(value: String): Double {
+
+            val cleaned =
+                value.replace(",", ".")
+
+            val split =
+                cleaned.split(":")
+
+            if (split.size != 3) return 0.0
+
+            val hours = split[0].toDoubleOrNull() ?: 0.0
+            val minutes = split[1].toDoubleOrNull() ?: 0.0
+            val seconds = split[2].toDoubleOrNull() ?: 0.0
+
+            return (hours * 3600) + (minutes * 60) + seconds
+        }
+
+        val start =
+            if (parts.isNotEmpty()) {
+                parseTime(parts[0])
+            } else {
+                0.0
+            }
+
+        val end =
+            if (parts.size > 1) {
+                parseTime(parts[1])
+            } else {
+                start
+            }
+
+        blocks.add(
+            TranscriptBlock(
+                id = id,
+                start = start,
+                end = end,
+                text = text
+            )
+        )
+    }
+
+    val fullText =
+        blocks.joinToString("\n\n") { it.text }
+
+    return TranscriptData(
+        fullText = fullText,
+        blocks = blocks
+    )
+}
+private fun formatTimestamp(
+    start: Double,
+    end: Double
+): String {
+
+    fun toTime(seconds: Double): String {
+
+        val totalSeconds = seconds.toInt()
+
+        val minutes = totalSeconds / 60
+        val secs = totalSeconds % 60
+
+        return "%02d:%02d".format(minutes, secs)
+    }
+
+    return "${toTime(start)} → ${toTime(end)}"
+}

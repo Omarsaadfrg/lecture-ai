@@ -14,5 +14,6 @@ data class ProcessingUiState(
     val progress: Float = 0f,        // 0.0 → 1.0
     val etaSeconds: Int = 0,
     val isFinished: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val result: String? = null // ✅ الإضافة الوحيدة
 )

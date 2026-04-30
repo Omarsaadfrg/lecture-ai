@@ -8,6 +8,7 @@ import org.koin.core.context.startKoin
 class LectureAiApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+
         startKoin {
             androidContext(this@LectureAiApplication)
             modules(appModule)

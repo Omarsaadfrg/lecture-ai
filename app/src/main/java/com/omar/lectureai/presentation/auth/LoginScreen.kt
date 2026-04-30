@@ -26,6 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.random.Random
+import androidx.compose.runtime.collectAsState
+import org.koin.androidx.compose.koinViewModel
+import androidx.compose.runtime.getValue
 
 // ─────────────────────────────────────────────
 //  COLORS
@@ -48,28 +51,26 @@ private object LC {
 // ─────────────────────────────────────────────
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit = {},
+    onLoginSuccess: () -> Unit,
     onCreateAccount: () -> Unit = {}
-) {
-    var email         by remember { mutableStateOf("") }
-    var password      by remember { mutableStateOf("") }
+){
+    val viewModel: LoginViewModel = koinViewModel()
     var showPassword  by remember { mutableStateOf(false) }
-    var isLoading     by remember { mutableStateOf(false) }
-    var emailError    by remember { mutableStateOf<String?>(null) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
     val focusManager  = LocalFocusManager.current
+    val uiState by viewModel.uiState.collectAsState(initial = AuthUiState())
 
-    fun doLogin() {
-        emailError    = if (email.isBlank()) "Email is required"
-        else if (!email.contains("@")) "Enter a valid email"
-        else null
-        passwordError = if (password.length < 6) "At least 6 characters" else null
-        if (emailError == null && passwordError == null) isLoading = true
+    LaunchedEffect(uiState.isLoginSuccess) {
+
+        android.util.Log.d(
+            "NAV_DEBUG",
+            "LOGIN SUCCESS STATE = ${uiState.isLoginSuccess}"
+        )
+
+        if (uiState.isLoginSuccess) {
+            onLoginSuccess()
+        }
     }
 
-    LaunchedEffect(isLoading) {
-        if (isLoading) { delay(1800); isLoading = false; onLoginSuccess() }
-    }
 
     Box(
         modifier = Modifier
@@ -122,12 +123,12 @@ fun LoginScreen(
             // ── Email ──
             AuthField(
                 label = "Email",
-                value = email,
-                onValueChange = { email = it; emailError = null },
+                value = uiState.email,
+                onValueChange = { viewModel.onEmailChange(it) },
                 placeholder = "your@email.com",
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
-                error = emailError
+                error = null
             )
 
             Spacer(Modifier.height(16.dp))
@@ -135,32 +136,56 @@ fun LoginScreen(
             // ── Password ──
             AuthField(
                 label = "Password",
-                value = password,
-                onValueChange = { password = it; passwordError = null },
+                value = uiState.password,
+                onValueChange = { viewModel.onPasswordChange(it) },
                 placeholder = "••••••••",
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done,
                 isPassword = true,
                 showPassword = showPassword,
                 onTogglePassword = { showPassword = !showPassword },
-                onDone = { focusManager.clearFocus(); doLogin() },
-                error = passwordError
+                onDone = { focusManager.clearFocus(); viewModel.login() },
+                error = null
             )
 
             Spacer(Modifier.height(32.dp))
 
-            LoginButton(isLoading = isLoading, onClick = { focusManager.clearFocus(); doLogin() })
+            LoginButton(
+                isLoading = uiState.isLoading,
+                onClick = {
+                    focusManager.clearFocus()
+                    android.util.Log.d("LOGIN_DEBUG", "LOGIN CLICKED")
+                    viewModel.login()
+                }
+            )
 
             Spacer(Modifier.height(28.dp))
 
-            Row {
-                Text("Don't have an account? ",
-                    style = TextStyle(fontSize = 14.sp, color = LC.TextSec))
-                Text("Create one",
-                    style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = LC.Accent),
-                    modifier = Modifier.clickable { onCreateAccount() })
-            }
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    modifier = Modifier.wrapContentWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Don't have an account? ",
+                        style = TextStyle(fontSize = 14.sp, color = LC.TextSec)
+                    )
 
+                    Text(
+                        "Create one",
+                        modifier = Modifier.clickable {
+
+                            android.util.Log.d("LOGIN_DEBUG", "REGISTER CLICKED")
+
+                            viewModel.register()
+                        }
+                    )
+
+                }
+            }
             Spacer(Modifier.height(32.dp))
 
             Text(
